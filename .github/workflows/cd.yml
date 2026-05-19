@@ -189,6 +189,20 @@ jobs:
     needs: [deploy-prod]
     if: failure()
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_PROD }}" | base64 -d > ~/.kube/config
+          kubectl config current-context
+
       - name: Trigger Rollback
         run: |
           echo "Pipeline failure detected. Triggering automatic rollback..."
