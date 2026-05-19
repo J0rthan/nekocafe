@@ -1,6 +1,7 @@
 """
 预约服务数据模型
 """
+
 import enum
 from datetime import datetime
 from typing import Optional

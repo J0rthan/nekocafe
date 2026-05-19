@@ -1,6 +1,7 @@
 """
 预约服务路由
 """
+
 import uuid
 import logging
 from datetime import datetime
@@ -18,7 +19,9 @@ _fake_tables: dict = {}
 
 
 @router.get("/tables", response_model=List[TableInfo])
-async def list_tables(store_id: Optional[str] = Query(None), available_only: bool = Query(False)):
+async def list_tables(
+    store_id: Optional[str] = Query(None), available_only: bool = Query(False)
+):
     """查询可用桌位"""
     tables = [
         TableInfo(

@@ -1,6 +1,7 @@
 """
 会员服务数据模型
 """
+
 import enum
 from datetime import datetime, date
 from typing import Optional, List

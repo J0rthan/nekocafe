@@ -1,6 +1,7 @@
 """
 NekoCafé 预约服务 - 主入口
 """
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -24,7 +25,8 @@ class JSONFormatter(logging.Formatter):
             "logger": record.name,
             "message": record.getMessage(),
             "service": "reservation",
-            "traceId": getattr(record, "traceId", "") or record.__dict__.get("traceId", ""),
+            "traceId": getattr(record, "traceId", "")
+            or record.__dict__.get("traceId", ""),
         }
         return json.dumps(log_entry, ensure_ascii=False)
 
@@ -72,9 +74,13 @@ async def trace_middleware(request: Request, call_next):
 
     extra = {"traceId": trace_id, "duration_ms": round(duration_ms, 2)}
     record = logging.LogRecord(
-        name="reservation", level=logging.INFO, pathname="", lineno=0,
+        name="reservation",
+        level=logging.INFO,
+        pathname="",
+        lineno=0,
         msg=f"{request.method} {request.url.path} -> {response.status_code}",
-        args=(), exc_info=None
+        args=(),
+        exc_info=None,
     )
     record.traceId = trace_id
     logger.handle(record)

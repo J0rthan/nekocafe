@@ -1,6 +1,7 @@
 """
 NekoCafé 会员服务 - 主入口
 """
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -22,7 +23,8 @@ class JSONFormatter(logging.Formatter):
             "logger": record.name,
             "message": record.getMessage(),
             "service": "member",
-            "traceId": getattr(record, "traceId", "") or record.__dict__.get("traceId", ""),
+            "traceId": getattr(record, "traceId", "")
+            or record.__dict__.get("traceId", ""),
         }
         return json.dumps(log_entry, ensure_ascii=False)
 
@@ -68,9 +70,13 @@ async def trace_middleware(request: Request, call_next):
     response.headers["X-Trace-Id"] = trace_id
 
     record = logging.LogRecord(
-        name="member", level=logging.INFO, pathname="", lineno=0,
+        name="member",
+        level=logging.INFO,
+        pathname="",
+        lineno=0,
         msg=f"{request.method} {request.url.path} -> {response.status_code}",
-        args=(), exc_info=None
+        args=(),
+        exc_info=None,
     )
     record.traceId = trace_id
     logger.handle(record)
