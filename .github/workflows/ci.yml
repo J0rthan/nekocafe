@@ -42,12 +42,9 @@ jobs:
         run: black --check services/
 
       - name: Run hadolint
-        uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: |
-            services/reservation/Dockerfile
-            services/member/Dockerfile
-          ignore: DL3013,DL3042
+        run: |
+          docker run --rm -i hadolint/hadolint < services/reservation/Dockerfile
+          docker run --rm -i hadolint/hadolint < services/member/Dockerfile
 
   # ============================================================
   # Stage 2: Unit Test
