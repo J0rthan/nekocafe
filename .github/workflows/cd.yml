@@ -47,6 +47,11 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v3
 
+      - name: Set lowercase image org
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_ORG=${OWNER}/nekocafe" >> $GITHUB_ENV
+
       - name: Helm lint
         run: helm lint infra/helm/nekocafe/
 
@@ -55,7 +60,7 @@ jobs:
           helm upgrade --install nekocafe infra/helm/nekocafe/ \
             -f infra/helm/nekocafe/values-dev.yaml \
             --set image.tag=${{ github.sha }} \
-            --set global.imageOrg=${{ github.repository_owner }}/nekocafe \
+            --set global.imageOrg=${{ env.IMAGE_ORG }} \
             --set autoscaling.enabled=false \
             --set postgresql.enabled=true \
             --set redis.enabled=true \
@@ -97,12 +102,17 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v3
 
+      - name: Set lowercase image org
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_ORG=${OWNER}/nekocafe" >> $GITHUB_ENV
+
       - name: Deploy Canary 5%
         run: |
           helm upgrade --install nekocafe-canary infra/helm/nekocafe/ \
             -f infra/helm/nekocafe/values-staging.yaml \
             --set image.tag=${{ github.sha }} \
-            --set global.imageOrg=${{ github.repository_owner }}/nekocafe \
+            --set global.imageOrg=${{ env.IMAGE_ORG }} \
             --set canary.enabled=true \
             --set canary.weight=5 \
             --set autoscaling.enabled=false \
@@ -157,12 +167,17 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v3
 
+      - name: Set lowercase image org
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_ORG=${OWNER}/nekocafe" >> $GITHUB_ENV
+
       - name: Deploy Canary 5%
         run: |
           helm upgrade --install nekocafe-canary infra/helm/nekocafe/ \
             -f infra/helm/nekocafe/values-prod.yaml \
             --set image.tag=${{ github.sha }} \
-            --set global.imageOrg=${{ github.repository_owner }}/nekocafe \
+            --set global.imageOrg=${{ env.IMAGE_ORG }} \
             --set canary.enabled=true \
             --set canary.weight=5 \
             --set autoscaling.enabled=false \
