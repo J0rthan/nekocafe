@@ -15,7 +15,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: "ghcr.io/${{ github.repository_owner }}/nekocafe"
+  IMAGE_OWNER: ${{ github.repository_owner }}
 
 jobs:
   # ============================================================
@@ -132,6 +132,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set lowercase image prefix
+        run: echo "IMAGE_PREFIX=ghcr.io/${IMAGE_OWNER,,}/nekocafe" >> $GITHUB_ENV
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -208,6 +211,9 @@ jobs:
         service: [reservation, member]
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set lowercase image prefix
+        run: echo "IMAGE_PREFIX=ghcr.io/${IMAGE_OWNER,,}/nekocafe" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
