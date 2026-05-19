@@ -1,0 +1,60 @@
+groups:
+  - name: nekocafe-alerts
+    rules:
+      # 规则 1: 服务宕机
+      - alert: ServiceDown
+        expr: up{job=~"nekocafe-.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: nekocafe-devops
+        annotations:
+          summary: "Service {{ $labels.job }} is DOWN"
+          description: "The service {{ $labels.job }} has been down for more than 1 minute."
+          runbook_url: "https://github.com/nekocafe/runbook.md#service-down"
+
+      # 规则 2: 高错误率
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: critical
+          team: nekocafe-devops
+        annotations:
+          summary: "High Error Rate (>1%) on {{ $labels.service }}"
+          description: "Error rate for {{ $labels.service }} is {{ $value | humanizePercentage }} in the last 5 minutes."
+          runbook_url: "https://github.com/nekocafe/runbook.md#high-error-rate"
+
+      # 规则 3: P95 延迟过高
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.5
+        for: 3m
+        labels:
+          severity: warning
+          team: nekocafe-devops
+        annotations:
+          summary: "High P95 Latency (>500ms) on {{ $labels.service }}"
+          description: "P95 latency for {{ $labels.service }} is {{ $value }}s in the last 5 minutes."
+          runbook_url: "https://github.com/nekocafe/runbook.md#high-latency"
+
+      # 规则 4: 内存使用率高
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{container=~"reservation|member"} / container_spec_memory_limit_bytes{container=~"reservation|member"} > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          team: nekocafe-devops
+        annotations:
+          summary: "High Memory Usage (>85%) on {{ $labels.container }}"
+          description: "Container {{ $labels.container }} memory usage is {{ $value | humanizePercentage }} of limit."
+
+      # 规则 5: HPA 接近上限
+      - alert: HPANearMaxReplicas
+        expr: kube_horizontalpodautoscaler_status_desired_replicas / kube_horizontalpodautoscaler_spec_max_replicas > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          team: nekocafe-devops
+        annotations:
+          summary: "HPA near max replicas for {{ $labels.horizontalpodautoscaler }}"
+          description: "HPA {{ $labels.horizontalpodautoscaler }} is at {{ $value | humanizePercentage }} of max replicas."

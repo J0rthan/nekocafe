@@ -1,0 +1,41 @@
+# Environment variables (contains secrets)
+.env
+.env.*
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+
+# Test
+.coverage
+coverage.xml
+test-results.xml
+.pytest_cache/
+htmlcov/
+
+# Scan
+bandit-report.json
+trivy-*.sarif
+
+# K8s
+kubeconfig*
+*.kubeconfig

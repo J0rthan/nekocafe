@@ -1,0 +1,154 @@
+version: "3.9"
+
+services:
+  # ==== 基础设施 ====
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: nekocafe-postgres
+    environment:
+      POSTGRES_USER: nekocafe
+      POSTGRES_PASSWORD: nekocafe_secret
+      POSTGRES_DB: nekocafe
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nekocafe"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - nekocafe-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: nekocafe-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - nekocafe-net
+
+  # ==== 核心服务 ====
+
+  reservation:
+    build:
+      context: services/reservation
+      dockerfile: Dockerfile
+    container_name: nekocafe-reservation
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://nekocafe:nekocafe_secret@postgres:5432/nekocafe
+      REDIS_URL: redis://redis:6379/0
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_SERVICE_NAME: reservation
+      LOG_LEVEL: INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - nekocafe-net
+
+  member:
+    build:
+      context: services/member
+      dockerfile: Dockerfile
+    container_name: nekocafe-member
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://nekocafe:nekocafe_secret@postgres:5432/nekocafe
+      REDIS_URL: redis://redis:6379/1
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_SERVICE_NAME: member
+      LOG_LEVEL: INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - nekocafe-net
+
+  # ==== 可观测性 ====
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: nekocafe-prometheus
+    volumes:
+      - ./infra/observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./infra/observability/prometheus/rules.yml:/etc/prometheus/rules.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    networks:
+      - nekocafe-net
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: nekocafe-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+    volumes:
+      - ./infra/observability/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./infra/observability/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - nekocafe-net
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: nekocafe-loki
+    volumes:
+      - ./infra/observability/loki/config.yml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - nekocafe-net
+
+  tempo:
+    image: grafana/tempo:2.3.0
+    container_name: nekocafe-tempo
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./infra/observability/tempo/tempo.yaml:/etc/tempo.yaml
+    ports:
+      - "4317:4317"
+      - "3200:3200"
+    networks:
+      - nekocafe-net
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  nekocafe-net:
+    driver: bridge

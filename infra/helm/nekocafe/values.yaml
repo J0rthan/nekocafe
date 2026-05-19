@@ -1,0 +1,174 @@
+# ============================================================
+# NekoCafé Helm Chart - 默认 Values
+# ============================================================
+
+# 全局配置
+global:
+  imageRegistry: ghcr.io
+  imageOrg: nekocafe
+  environment: dev
+  storageClass: standard
+
+# 镜像配置
+image:
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# 镜像仓库密钥
+imagePullSecrets: []
+
+# 服务通用配置
+replicaCount: 2
+
+# 金丝雀发布
+canary:
+  enabled: false
+  weight: 5
+
+# 资源限制
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# 自动扩缩容
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Pod 中断预算
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# 健康检查
+healthCheck:
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 15
+    timeoutSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+
+# ============================================================
+# Reservation 预约服务
+# ============================================================
+reservation:
+  enabled: true
+  name: reservation
+  port: 8000
+  service:
+    type: ClusterIP
+    port: 8000
+  ingress:
+    enabled: false
+  env:
+    LOG_LEVEL: INFO
+    OTEL_SERVICE_NAME: reservation
+    OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+
+# ============================================================
+# Member 会员服务
+# ============================================================
+member:
+  enabled: true
+  name: member
+  port: 8001
+  service:
+    type: ClusterIP
+    port: 8001
+  ingress:
+    enabled: false
+  env:
+    LOG_LEVEL: INFO
+    OTEL_SERVICE_NAME: member
+    OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+
+# ============================================================
+# PostgreSQL
+# ============================================================
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "15-alpine"
+  auth:
+    username: nekocafe
+    password: nekocafe_secret
+    database: nekocafe
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+# ============================================================
+# Redis
+# ============================================================
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: "7-alpine"
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 256Mi
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+# ============================================================
+# ServiceMonitor (Prometheus)
+# ============================================================
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  path: /metrics
+
+# ============================================================
+# Ingress
+# ============================================================
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: api.nekocafe.local
+      paths:
+        - path: /api/v1/reservations
+          pathType: Prefix
+          serviceName: reservation
+          servicePort: 8000
+        - path: /api/v1/members
+          pathType: Prefix
+          serviceName: member
+          servicePort: 8001
+  tls: []

@@ -1,0 +1,74 @@
+# Production 环境 Values
+global:
+  environment: production
+
+replicaCount: 3
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 60
+
+canary:
+  enabled: true
+  weight: 5
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+reservation:
+  env:
+    LOG_LEVEL: WARNING
+  ingress:
+    enabled: true
+
+member:
+  env:
+    LOG_LEVEL: WARNING
+  ingress:
+    enabled: true
+
+postgresql:
+  primary:
+    persistence:
+      enabled: true
+      size: 50Gi
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+redis:
+  master:
+    persistence:
+      enabled: true
+      size: 5Gi
+
+serviceMonitor:
+  enabled: true
+  interval: 15s
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: api.nekocafe.example.com
+  tls:
+    - secretName: nekocafe-tls
+      hosts:
+        - api.nekocafe.example.com

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-reservation
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.reservation.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: nekocafe
+spec:
+  type: {{ .Values.reservation.service.type }}
+  selector:
+    app: {{ .Values.reservation.name }}
+  ports:
+  - port: {{ .Values.reservation.service.port }}
+    targetPort: http
+    protocol: TCP
+    name: http-reservation
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-member
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.member.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: nekocafe
+spec:
+  type: {{ .Values.member.service.type }}
+  selector:
+    app: {{ .Values.member.name }}
+  ports:
+  - port: {{ .Values.member.service.port }}
+    targetPort: http
+    protocol: TCP
+    name: http-member

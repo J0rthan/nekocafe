@@ -1,0 +1,50 @@
+# Staging 环境 Values
+global:
+  environment: staging
+
+replicaCount: 2
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+
+canary:
+  enabled: true
+  weight: 5
+
+reservation:
+  env:
+    LOG_LEVEL: INFO
+
+member:
+  env:
+    LOG_LEVEL: INFO
+
+postgresql:
+  primary:
+    persistence:
+      enabled: true
+      size: 5Gi
+
+redis:
+  master:
+    persistence:
+      enabled: true
+      size: 1Gi
+
+serviceMonitor:
+  enabled: true
+
+ingress:
+  enabled: true
+  hosts:
+    - host: api-staging.nekocafe.example.com

@@ -1,0 +1,17 @@
+# Docker ignore patterns
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.git/
+.gitignore
+.coveragerc
+*.md
+tests/
+coverage.xml
+test-results.xml
+.pytest_cache/
+.DS_Store
+.env
+.env.*

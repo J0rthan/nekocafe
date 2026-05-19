@@ -1,0 +1,45 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-reservation
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.reservation.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/part-of: nekocafe
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.reservation.name }}
+  endpoints:
+  - port: http-reservation
+    interval: {{ .Values.serviceMonitor.interval }}
+    path: {{ .Values.serviceMonitor.path }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-member
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.member.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/part-of: nekocafe
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.member.name }}
+  endpoints:
+  - port: http-member
+    interval: {{ .Values.serviceMonitor.interval }}
+    path: {{ .Values.serviceMonitor.path }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+{{- end }}

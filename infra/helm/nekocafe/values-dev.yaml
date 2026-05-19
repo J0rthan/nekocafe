@@ -1,0 +1,40 @@
+# Dev 环境 Values
+global:
+  environment: dev
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+autoscaling:
+  enabled: false
+
+canary:
+  enabled: false
+
+reservation:
+  env:
+    LOG_LEVEL: DEBUG
+
+member:
+  env:
+    LOG_LEVEL: DEBUG
+
+postgresql:
+  primary:
+    persistence:
+      enabled: false  # Dev 环境不持久化
+
+redis:
+  master:
+    persistence:
+      enabled: false
+
+serviceMonitor:
+  enabled: false  # Dev 不需要 Prometheus 监控

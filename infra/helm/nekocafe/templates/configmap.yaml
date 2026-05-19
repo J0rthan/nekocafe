@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/part-of: nekocafe
+data:
+  ENVIRONMENT: {{ .Values.global.environment | quote }}
+  RESERVATION_PORT: {{ .Values.reservation.port | toString | quote }}
+  MEMBER_PORT: {{ .Values.member.port | toString | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://tempo.{{ .Release.Namespace }}.svc.cluster.local:4317"
