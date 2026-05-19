@@ -155,13 +155,12 @@ jobs:
           fi
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.IMAGE_PREFIX }}/${{ matrix.service }}:ci-${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-${{ matrix.service }}.sarif'
-          severity: 'HIGH,CRITICAL'
-          exit-code: '0'
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image \
+            ${{ env.IMAGE_PREFIX }}/${{ matrix.service }}:ci-${{ github.sha }} \
+            --severity HIGH,CRITICAL --format sarif \
+            > trivy-${{ matrix.service }}.sarif
+        continue-on-error: true
 
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v3
