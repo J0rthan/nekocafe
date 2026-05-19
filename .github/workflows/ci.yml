@@ -42,9 +42,11 @@ jobs:
         run: black --check services/
 
       - name: Run hadolint
+        env:
+          HADOLINT_IGNORE: DL3013,DL3042,DL3008
         run: |
-          docker run --rm -i hadolint/hadolint --ignore DL3013 --ignore DL3042 --ignore DL3008 - < services/reservation/Dockerfile
-          docker run --rm -i hadolint/hadolint --ignore DL3013 --ignore DL3042 --ignore DL3008 - < services/member/Dockerfile
+          docker run --rm -i -e HADOLINT_IGNORE hadolint/hadolint < services/reservation/Dockerfile
+          docker run --rm -i -e HADOLINT_IGNORE hadolint/hadolint < services/member/Dockerfile
 
   # ============================================================
   # Stage 2: Unit Test
