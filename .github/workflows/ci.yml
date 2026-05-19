@@ -42,7 +42,7 @@ jobs:
         run: black --check services/
 
       - name: Run hadolint
-        uses: hadolint/hadolint-action@v3
+        uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: |
             services/reservation/Dockerfile
