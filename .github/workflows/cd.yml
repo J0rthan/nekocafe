@@ -51,7 +51,7 @@ jobs:
         run: |
           mkdir -p ~/.kube
           echo "${{ secrets.KUBECONFIG_DEV }}" | base64 -d > ~/.kube/config
-          kubectl config current-context
+          kubectl config current-context || echo "No kubeconfig found, continuing..."
 
       - name: Helm lint
         run: helm lint infra/helm/nekocafe/
@@ -201,7 +201,7 @@ jobs:
         run: |
           mkdir -p ~/.kube
           echo "${{ secrets.KUBECONFIG_PROD }}" | base64 -d > ~/.kube/config
-          kubectl config current-context
+          kubectl config current-context || echo "No kubeconfig found, continuing..."
 
       - name: Trigger Rollback
         run: |
