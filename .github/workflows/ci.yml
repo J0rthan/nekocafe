@@ -81,7 +81,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install -r services/${{ matrix.service }}/requirements.txt pytest pytest-cov
+        run: pip install -r services/${{ matrix.service }}/requirements.txt pytest pytest-cov "httpx>=0.24,<0.28"
 
       - name: Run tests with coverage
         run: |
@@ -211,7 +211,7 @@ jobs:
 
       - name: Run integration tests
         run: |
-          pip install httpx
+          pip install "httpx>=0.24,<0.28"
           python scripts/integration_test.py
 
       - name: Collect logs on failure
