@@ -158,14 +158,8 @@ jobs:
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image \
             ${{ env.IMAGE_PREFIX }}/${{ matrix.service }}:ci-${{ github.sha }} \
-            --severity HIGH,CRITICAL --format sarif \
-            > trivy-${{ matrix.service }}.sarif
+            --severity HIGH,CRITICAL
         continue-on-error: true
-
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-${{ matrix.service }}.sarif'
 
   # ============================================================
   # Stage 5: Integration Test
