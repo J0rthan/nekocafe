@@ -61,6 +61,7 @@ jobs:
           helm upgrade --install nekocafe infra/helm/nekocafe/ \
             -f infra/helm/nekocafe/values-dev.yaml \
             --set image.tag=${{ github.sha }} \
+            --set global.imageOrg=${{ github.repository_owner }}/nekocafe \
             --namespace nekocafe-dev \
             --create-namespace \
             --wait \
@@ -96,6 +97,7 @@ jobs:
           helm upgrade --install nekocafe-canary infra/helm/nekocafe/ \
             -f infra/helm/nekocafe/values-staging.yaml \
             --set image.tag=${{ github.sha }} \
+            --set global.imageOrg=${{ github.repository_owner }}/nekocafe \
             --set canary.enabled=true \
             --set canary.weight=5 \
             --namespace nekocafe-staging \
@@ -154,6 +156,7 @@ jobs:
           helm upgrade --install nekocafe-canary infra/helm/nekocafe/ \
             -f infra/helm/nekocafe/values-prod.yaml \
             --set image.tag=${{ github.sha }} \
+            --set global.imageOrg=${{ github.repository_owner }}/nekocafe \
             --set canary.enabled=true \
             --set canary.weight=5 \
             --namespace nekocafe-prod \
