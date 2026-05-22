@@ -36,7 +36,7 @@ jobs:
   deploy-dev:
     name: Deploy to Dev
     runs-on: ubuntu-latest
-    if: github.event.inputs.environment == 'dev' || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'prod'
+
     steps:
       - uses: actions/checkout@v4
 
@@ -92,7 +92,6 @@ jobs:
     name: Deploy to Staging (Canary)
     runs-on: ubuntu-latest
     needs: deploy-dev
-    if: github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'prod'
     steps:
       - uses: actions/checkout@v4
 
@@ -154,7 +153,6 @@ jobs:
     name: Deploy to Production (Canary)
     runs-on: ubuntu-latest
     needs: deploy-staging
-    if: github.event.inputs.environment == 'prod'
     environment:
       name: production
       url: https://api.nekocafe.example.com
