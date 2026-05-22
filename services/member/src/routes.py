@@ -82,3 +82,5 @@ async def get_reservation_history(member_id: str):
         "total_reservations": 0,
         "reservations": [],
     }
+
+# CI test
