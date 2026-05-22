@@ -18,6 +18,8 @@ helm upgrade nekocafe-canary infra/helm/nekocafe/ \
   -f "infra/helm/nekocafe/values-${ENV}.yaml" \
   --set canary.enabled="${WEIGHT}" \
   --set canary.weight="${WEIGHT}" \
+  --set serviceMonitor.enabled=false \
+  --set ingress.enabled=false \
   -n "${NAMESPACE}" \
   --reuse-values \
   --wait \
@@ -30,6 +32,8 @@ if [ "${WEIGHT}" -eq 100 ]; then
     -f "infra/helm/nekocafe/values-${ENV}.yaml" \
     --set canary.enabled=false \
     --set canary.weight=0 \
+      --set serviceMonitor.enabled=false \
+      --set ingress.enabled=false \
     -n "${NAMESPACE}" \
     --wait \
     --timeout 5m
