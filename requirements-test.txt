@@ -1,0 +1,35 @@
+# Testing
+pytest>=8.0
+pytest-cov>=4.1
+pytest-xdist>=3.5
+pytest-asyncio>=0.23
+httpx>=0.24,<0.28
+
+# Property-Based Testing
+hypothesis>=6.100
+
+# Contract Testing
+pact-python>=2.2
+
+# Mutation Testing
+mutmut>=2.5
+
+# E2E Testing
+playwright>=1.42
+
+# Performance Testing
+# k6 is installed separately via binary
+
+# Security Testing
+bandit>=1.7
+
+# Integration Testing
+testcontainers>=4.4
+
+# Linting
+flake8>=7.0
+black>=24.0
+
+# Reports
+coverage>=7.4
+junitparser>=3.1

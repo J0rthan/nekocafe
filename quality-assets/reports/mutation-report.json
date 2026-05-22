@@ -1,0 +1,84 @@
+{
+  "service": "all",
+  "mutants": [
+    {
+      "desc": "降低积分上限",
+      "status": "SURVIVED",
+      "function": "member/domain"
+    },
+    {
+      "desc": "降低积分下限",
+      "status": "SURVIVED",
+      "function": "member/domain"
+    },
+    {
+      "desc": "减少首访奖励",
+      "status": "SURVIVED",
+      "function": "member/domain"
+    },
+    {
+      "desc": "白金阈值: >= 改为 >",
+      "status": "KILLED",
+      "function": "member/domain"
+    },
+    {
+      "desc": "金卡阈值: >= 改为 >",
+      "status": "KILLED",
+      "function": "member/domain"
+    },
+    {
+      "desc": "银卡阈值: >= 改为 >",
+      "status": "KILLED",
+      "function": "member/domain"
+    },
+    {
+      "desc": "升级判断: > 改为 >=",
+      "status": "KILLED",
+      "function": "member/domain"
+    },
+    {
+      "desc": "脱敏格式错误",
+      "status": "KILLED",
+      "function": "member/domain"
+    },
+    {
+      "desc": "长度检查: > 改为 >=",
+      "status": "SURVIVED",
+      "function": "member/domain"
+    },
+    {
+      "desc": "容量检查: >= 改为 >",
+      "status": "KILLED",
+      "function": "reservation/domain"
+    },
+    {
+      "desc": "冲突检测: < 改为 <=",
+      "status": "KILLED",
+      "function": "reservation/domain"
+    },
+    {
+      "desc": "取消判断: < 改为 <=",
+      "status": "SURVIVED",
+      "function": "reservation/domain"
+    },
+    {
+      "desc": "基础价格降低",
+      "status": "KILLED",
+      "function": "reservation/domain"
+    },
+    {
+      "desc": "高峰期倍率降低",
+      "status": "KILLED",
+      "function": "reservation/domain"
+    },
+    {
+      "desc": "白金折扣变更",
+      "status": "KILLED",
+      "function": "reservation/domain"
+    }
+  ],
+  "total": 15,
+  "killed": 10,
+  "survived": 5,
+  "score": 66.7
+}

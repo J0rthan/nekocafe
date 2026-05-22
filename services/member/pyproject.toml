@@ -9,3 +9,8 @@ addopts = "-v --cov=src --cov-report=term-missing"
 
 [tool.bandit]
 exclude_dirs = ["tests", "venv", ".venv"]
+
+[tool.mutmut]
+paths_to_mutate = ["src/domain.py"]
+runner = "cd /tmp/nekocafe/services/member && PYTHONPATH=src:$PYTHONPATH python -m pytest tests/"
+backup = false

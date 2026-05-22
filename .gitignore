@@ -39,3 +39,6 @@ trivy-*.sarif
 # K8s
 kubeconfig*
 *.kubeconfig
+mutants/
+venv/
+__pycache__/

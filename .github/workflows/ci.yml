@@ -36,7 +36,7 @@ jobs:
         run: pip install flake8 black
 
       - name: Run flake8
-        run: flake8 services/ --max-line-length=120 --exit-zero
+        run: flake8 services/ --max-line-length=120
 
       - name: Run black check
         run: black --check services/
@@ -197,6 +197,69 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker compose down -v
+
+  # ============================================================
+  # Stage 6: E2E Test (CD准入)
+  # ============================================================
+  e2e-test:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [integration-test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start services
+        run: |
+          docker compose up -d --build
+          sleep 15
+
+      - name: Health check
+        run: |
+          curl -f --retry 10 --retry-delay 5 http://localhost:8000/health || exit 1
+          curl -f --retry 10 --retry-delay 5 http://localhost:8001/health || exit 1
+
+      - name: Run E2E tests
+        run: |
+          pip install "httpx>=0.24,<0.28"
+          python scripts/e2e_test.py
+
+      - name: Collect logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
+
+  # ============================================================
+  # Stage 6.5: Mutation Testing Report
+  # ============================================================
+  mutation-test:
+    name: Mutation Testing
+    runs-on: ubuntu-latest
+    needs: [unit-test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r services/member/requirements.txt
+          pip install -r services/reservation/requirements.txt
+          pip install pytest pytest-cov "httpx>=0.24,<0.28"
+
+      - name: Run mutation testing
+        run: python scripts/mutation_test.py
+        continue-on-error: true
+
+      - name: Upload mutation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-report
+          path: quality-assets/reports/mutation-report.json
 
   # ============================================================
   # Stage 7: Push Image to Registry
