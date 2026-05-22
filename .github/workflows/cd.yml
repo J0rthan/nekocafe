@@ -18,10 +18,16 @@ on:
         description: 'Canary percentage (5-50)'
         type: number
         default: 5
+      image_tag:
+        description: 'Image tag to deploy (default: latest)'
+        required: false
+        type: string
+        default: 'latest'
 
 env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: "${{ github.repository_owner }}/nekocafe"
+  IMAGE_TAG: "${{ github.event.inputs.image_tag || 'latest' }}"
 
 jobs:
   # ============================================================
@@ -59,7 +65,7 @@ jobs:
         run: |
           helm upgrade --install nekocafe infra/helm/nekocafe/ \
             -f infra/helm/nekocafe/values-dev.yaml \
-            --set image.tag=${{ github.sha }} \
+            --set image.tag=${{ env.IMAGE_TAG }} \
             --set global.imageOrg=${{ env.IMAGE_ORG }} \
             --set autoscaling.enabled=false \
             --set postgresql.enabled=true \
@@ -111,7 +117,7 @@ jobs:
         run: |
           helm upgrade --install nekocafe-canary infra/helm/nekocafe/ \
             -f infra/helm/nekocafe/values-staging.yaml \
-            --set image.tag=${{ github.sha }} \
+            --set image.tag=${{ env.IMAGE_TAG }} \
             --set global.imageOrg=${{ env.IMAGE_ORG }} \
             --set canary.enabled=true \
             --set canary.weight=5 \
@@ -176,7 +182,7 @@ jobs:
         run: |
           helm upgrade --install nekocafe-canary infra/helm/nekocafe/ \
             -f infra/helm/nekocafe/values-prod.yaml \
-            --set image.tag=${{ github.sha }} \
+            --set image.tag=${{ env.IMAGE_TAG }} \
             --set global.imageOrg=${{ env.IMAGE_ORG }} \
             --set canary.enabled=true \
             --set canary.weight=5 \
