@@ -69,6 +69,7 @@ jobs:
             --set global.imageOrg=${{ env.IMAGE_ORG }} \
             --set autoscaling.enabled=false \
             --set serviceMonitor.enabled=false \
+            --set ingress.enabled=false \
             --set postgresql.enabled=true \
             --set redis.enabled=true \
             --namespace nekocafe-dev \
@@ -123,6 +124,7 @@ jobs:
             --set canary.weight=5 \
             --set autoscaling.enabled=false \
             --set serviceMonitor.enabled=false \
+            --set ingress.enabled=false \
             --set postgresql.enabled=true \
             --set redis.enabled=true \
             --namespace nekocafe-staging \
@@ -188,6 +190,7 @@ jobs:
             --set canary.weight=5 \
             --set autoscaling.enabled=false \
             --set serviceMonitor.enabled=false \
+            --set ingress.enabled=false \
             --set postgresql.enabled=true \
             --set redis.enabled=true \
             --namespace nekocafe-prod \
