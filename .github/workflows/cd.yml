@@ -144,7 +144,7 @@ jobs:
           echo "Canary healthy. Promoting to 100%..."
 
       - name: Promote Canary to 100%
-        run: bash scripts/canary-promote.sh staging 100
+        run: bash scripts/canary-promote.sh staging 100 ${{ env.IMAGE_ORG }} ${{ env.IMAGE_TAG }}
 
       - name: Cleanup kind cluster
         if: always()
