@@ -209,7 +209,7 @@ jobs:
           done
 
       - name: Promote Canary
-        run: bash scripts/canary-promote.sh prod 100
+        run: bash scripts/canary-promote.sh prod 100 ${{ env.IMAGE_ORG }} ${{ env.IMAGE_TAG }}
 
       - name: Cleanup kind cluster
         if: always()
